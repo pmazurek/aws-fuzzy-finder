@@ -2,8 +2,7 @@
 
 This is a helper app that allows you to ssh into aws instances using fuzzy searching through instances name tags.
 
-[![asciicast](https://asciinema.org/a/1fzqrev6rn1mp9e68i4e9ri7g.png)](https://asciinema.org/a/1fzqrev6rn1mp9e68i4e9ri7g)
-
+![](https://raw.github.com/pmazurek/aws-fuzzy-finder/master/demo.gif)
 
 ## Installation
 
