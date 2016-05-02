@@ -10,7 +10,8 @@ setup(
     keywords=['aws', 'ssh', 'fuzzy', 'ec2'],
     packages=['aws_fuzzy_finder'],
     install_requires=[
-        'boto3==1.3.1'
+        'boto3==1.3.1',
+        'click==6.6',
     ],
     entry_points=dict(
         console_scripts=[
