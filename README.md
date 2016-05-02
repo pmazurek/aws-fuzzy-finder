@@ -22,7 +22,8 @@ You can add the following environment variables to your .bashrc to make the sett
 
 - `AWS_FUZZ_USER` - default user to use with SSH command - defaults to `ec2-user`
 - `AWS_FUZZ_KEY_PATH` - path to your private key with which you are authorised on the instances - defaults to `~/.ssh/id_rsa`
-- `AWS_FUZZ_PRIVATE_IP` - path to your private key with which you are authorised on the instances - defaults to `~/.ssh/id_rsa`
+- `AWS_FUZZ_PRIVATE_IP` - set if you want to use only private IP's to connect to instances
+- `AWS_FUZZ_SSH_COMMAND_TEMLPATE` - set if you want to customize the ssh command , defaults to `ssh {user}@{host} -i {key}`
 
 or you can set this params at runtime :
 
