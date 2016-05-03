@@ -53,6 +53,7 @@ def entrypoint(use_private_ip, key_path, user):
 
     cmd = 'echo -e "{}" | fzf'.format("\n".join(instances_for_fzf))
     choice = subprocess.check_output(cmd, shell=True, executable='/bin/bash')
+    choice = choice.decode(encoding='UTF-8')
     chosen_ip = choice.split(SEPARATOR)[1].rstrip()
     ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
         user=ENV_SSH_USER or user,
