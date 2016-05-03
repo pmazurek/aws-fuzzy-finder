@@ -12,11 +12,6 @@ ENV_KEY_PATH = os.getenv('AWS_FUZZ_ENV_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh {user}@{host} -i {key}")
 
-lib_path = '{}/{}'.format(
-    os.path.dirname(os.path.abspath(__file__)),
-    'fzf-0.12.1-linux_386'
-)
-
 
 @click.command()
 @click.option('--private', 'use_private_ip', flag_value=True, help="Use private IP's")
@@ -40,6 +35,10 @@ def entrypoint(use_private_ip, key_path, user):
             ip
         ))
 
+    lib_path = '{}/{}'.format(
+        os.path.dirname(os.path.abspath(__file__)),
+        'fzf-0.12.1-linux_386'
+    )
     fuzzysearch_bash_command = 'echo -e "{}" | {}'.format(
         "\n".join(searchable_instances),
         lib_path
