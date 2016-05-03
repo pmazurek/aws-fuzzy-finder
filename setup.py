@@ -9,6 +9,7 @@ setup(
     author='Piotr Mazurek, Daria Rudkiewicz',
     keywords=['aws', 'ssh', 'fuzzy', 'ec2'],
     packages=['aws_fuzzy_finder'],
+    package_data={'': ['fzf-0.12.1-linux_386']},
     install_requires=[
         'boto3==1.3.1',
         'click==6.6',

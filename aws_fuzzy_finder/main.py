@@ -10,6 +10,11 @@ ENV_KEY_PATH = os.getenv('AWS_FUZZ_ENV_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh {user}@{host} -i {key}")
 
+lib_path = '{}/{}'.format(
+    os.path.dirname(os.path.abspath(__file__)),
+    'fzf-0.12.1-linux_386'
+)
+
 
 @click.command()
 @click.option('--private', 'use_private_ip', flag_value=True, help="Use private IP's")
@@ -50,10 +55,16 @@ def entrypoint(use_private_ip, key_path, user):
             SEPARATOR,
             ip
         ))
+    cmd = 'echo -e "{}" | {}'.format(
+        "\n".join(instances_for_fzf),
+        lib_path
+    )
+    try:
+        choice = subprocess.check_output(cmd, shell=True, executable='/bin/bash').decode(encoding='UTF-8')
+    except subprocess.CalledProcessError:
+        print("No choice provided, exiting.")
+        exit(1)
 
-    cmd = 'echo -e "{}" | fzf'.format("\n".join(instances_for_fzf))
-    choice = subprocess.check_output(cmd, shell=True, executable='/bin/bash')
-    choice = choice.decode(encoding='UTF-8')
     chosen_ip = choice.split(SEPARATOR)[1].rstrip()
     ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
         user=ENV_SSH_USER or user,
