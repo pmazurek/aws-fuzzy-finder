@@ -4,6 +4,8 @@ import subprocess
 import boto3
 import click
 
+from .aws_utils import gather_instance_data, get_tag_value
+
 SEPARATOR = " @ "
 ENV_SSH_USER = os.getenv('AWS_FUZZ_USER')
 ENV_KEY_PATH = os.getenv('AWS_FUZZ_ENV_KEY_PATH')
@@ -22,47 +24,30 @@ lib_path = '{}/{}'.format(
 @click.option('--user', default='ec2-user', help="User to SSH with, default: ec2-user")
 def entrypoint(use_private_ip, key_path, user):
     client = boto3.client('ec2')
-    output = client.describe_instances()
-    pretty_instances = []
+    boto_instance_data = client.describe_instances()
+    instance_data = gather_instance_data(boto_instance_data['Reservations'])
 
-    for reservation in output['Reservations']:
-        for instance in reservation['Instances']:
-            if instance['State']['Name'] != 'running':
-                continue
-
-            instance_data = {
-                'public_ip': instance.get('PublicIpAddress', ''),
-                'private_ip': instance['PrivateIpAddress'],
-                'tags': instance['Tags']
-            }
-            pretty_instances.append(instance_data)
-
-    def get_tag_value(tag_name, tags):
-        for tag in tags:
-            if tag['Key'] == tag_name:
-                return tag['Value'].replace('"', '')
-
-    instances_for_fzf = []
-
-    for instance_data in pretty_instances:
-        name = get_tag_value('Name', instance_data['tags'])
+    searchable_instances = []
+    for instance in instance_data:
+        name = get_tag_value('Name', instance['tags'])
         if use_private_ip or ENV_USE_PRIVATE_IP:
-            ip = instance_data['private_ip']
+            ip = instance['private_ip']
         else:
-            ip = instance_data['public_ip'] or instance_data['private_ip']
-        instances_for_fzf.append("{}{}{}".format(
+            ip = instance['public_ip'] or instance['private_ip']
+        searchable_instances.append("{}{}{}".format(
             name,
             SEPARATOR,
             ip
         ))
-    cmd = 'echo -e "{}" | {}'.format(
-        "\n".join(instances_for_fzf),
+
+    fuzzysearch_bash_command = 'echo -e "{}" | {}'.format(
+        "\n".join(searchable_instances),
         lib_path
     )
+
     try:
-        choice = subprocess.check_output(cmd, shell=True, executable='/bin/bash').decode(encoding='UTF-8')
+        choice = subprocess.check_output(fuzzysearch_bash_command, shell=True, executable='/bin/bash').decode(encoding='UTF-8')
     except subprocess.CalledProcessError:
-        print("No choice provided, exiting.")
         exit(1)
 
     chosen_ip = choice.split(SEPARATOR)[1].rstrip()
