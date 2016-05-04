@@ -6,6 +6,10 @@ def gather_instance_data(reservations):
             if instance['State']['Name'] != 'running':
                 continue
 
+            # skipping not named instances
+            if 'Tags' not in instance:
+                continue
+
             instance_data = {
                 'public_ip': instance.get('PublicIpAddress', ''),
                 'private_ip': instance['PrivateIpAddress'],
