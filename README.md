@@ -20,13 +20,16 @@ Options:
   --help           Show this message and exit.
 ```
 
-Or you can add following environment variables to your .bashrc to make the settings permamant:
+Or you can append this to your  ~/.bashrc to make the settings permamant:
+```
+export AWS_FUZZ_USER="your.user"
+export AWS_FUZZ_ENV_KEY_PATH="~/.ssh/your_private_key"
+export AWS_FUZZ_PRIVATE_IP='true' # Delete this one if you want to use public IP's
 
-- `AWS_FUZZ_USER` - default user to use with SSH command - defaults to `ec2-user`
-- `AWS_FUZZ_KEY_PATH` - path to your private key with which you are authorised on the instances - defaults to `~/.ssh/id_rsa`
-- `AWS_FUZZ_PRIVATE_IP` - set if you want to use only private IP's to connect to instances
-- `AWS_FUZZ_SSH_COMMAND_TEMLPATE` - set if you want to customize the ssh command , defaults to `ssh {user}@{host} -i {key}`
+bind  '"\C-f": "aws-fuzzy\e\C-e\er\C-m"' # This will bind the aws-fuzzy command to ctrl+f
+```
 
+`AWS_FUZZ_SSH_COMMAND_TEMLPATE` - set this env var if you want to customize the ssh command , defaults to `ssh {user}@{host} -i {key}`
 
 ## Usage
 
@@ -34,10 +37,8 @@ To run, use the following command:
 
 `aws-fuzzy`
 
-This app will use your default `AWS_PROFILE` to query AWS api for all the instances details.
+To run using a different AWS profile, run the command as follows:
+
+`AWS_DEFAULT_PROFILE=profile_name aws-fuzzy`
 
 Enjoy!
-
-## TODO
-- Add keybinding to bash (eg. alt+s) to make it even easier to use
-- Add install script that will install fzf, add all the env vars to bashrc and configure keybindings
