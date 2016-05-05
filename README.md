@@ -23,7 +23,7 @@ Options:
 Or you can append this to your  ~/.bashrc to make the settings permamant:
 ```
 export AWS_FUZZ_USER="your.user"
-export AWS_FUZZ_ENV_KEY_PATH="~/.ssh/your_private_key"
+export AWS_FUZZ_KEY_PATH="~/.ssh/your_private_key"
 export AWS_FUZZ_PRIVATE_IP='true' # Delete this one if you want to use public IP's
 
 bind  '"\C-f": "aws-fuzzy\e\C-e\er\C-m"' # This will bind the aws-fuzzy command to ctrl+f
