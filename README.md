@@ -4,6 +4,8 @@ This is a helper app that allows you to ssh into aws instances using fuzzy searc
 
 ![](https://raw.github.com/pmazurek/aws-fuzzy-finder/master/demo.gif)
 
+This thing is built on top of [fzf](https://github.com/junegunn/fzf-bin/releases) binaries and [boto3](https://github.com/boto/boto3).
+
 ## Installation
 
 `pip install aws-fuzzy-finder`
