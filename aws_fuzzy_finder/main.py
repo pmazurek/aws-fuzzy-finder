@@ -60,7 +60,7 @@ def entrypoint(use_private_ip, key_path, user):
             ip
         ))
 
-    if sys.platform == 'linux2':
+    if sys.platform.startswith('linux'):
         lib = 'fzf-0.12.1-linux_386'
     elif sys.platform == 'darwin':
         lib = 'fzf-0.12.1-darwin_386'
