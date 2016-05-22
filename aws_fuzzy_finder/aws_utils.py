@@ -1,7 +1,17 @@
 import boto3
-from botocore.exceptions import NoRegionError, PartialCredentialsError, NoCredentialsError
+from botocore.exceptions import (
+    NoRegionError,
+    PartialCredentialsError,
+    NoCredentialsError,
+    ClientError
+)
 
-from .settings import SEPARATOR
+from .settings import (
+    SEPARATOR,
+    NO_REGION_ERROR,
+    NO_CREDENTIALS_ERROR,
+    WRONG_CREDENTIALS_ERROR
+)
 
 
 def gather_instance_data(reservations):
@@ -32,25 +42,17 @@ def get_tag_value(tag_name, tags):
 
 
 def get_aws_instances():
-
     try:
-        client = boto3.client('ec2')
-        boto_instance_data = client.describe_instances()
+        return boto3.client('ec2').describe_instances()
     except NoRegionError:
-        print('No AWS region specified.')
-        print('Specify region in your boto config or add a "AWS_DEFAULT_REGION" environment variable.')
-        print('$ export AWS_DEFAULT_REGION="<your_region_code>"')
-        print('For more info visit:')
-        print('http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#'
-              'concepts-available-regions')
+        print(NO_REGION_ERROR)
         exit(1)
     except (PartialCredentialsError, NoCredentialsError):
-        print('No AWS credentials specified.')
-        print('Make sure to set your aws_access_key_id, aws_secret_access_key and region in your boto config')
-        print('as described here: http://boto3.readthedocs.io/en/latest/guide/configuration.html')
+        print(NO_CREDENTIALS_ERROR)
         exit(1)
-
-    return boto_instance_data
+    except ClientError:
+        print(WRONG_CREDENTIALS_ERROR)
+        exit(1)
 
 
 def prepare_searchable_instances(reservations, use_private_ip):

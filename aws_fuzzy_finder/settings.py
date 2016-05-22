@@ -19,3 +19,15 @@ LIBRARY_PATH = '{}/libs/{}'.format(
     os.path.dirname(os.path.abspath(__file__)),
     lib
 )
+
+NO_REGION_ERROR = """No AWS region specified.
+Specify region in your boto config or add a "AWS_DEFAULT_REGION" environment variable.
+$ export AWS_DEFAULT_REGION="<your_region_code>"
+For more info visit:
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions"""
+
+NO_CREDENTIALS_ERROR = """No AWS credentials specified.
+Make sure to set your aws_access_key_id, aws_secret_access_key and region in your boto config
+as described here: http://boto3.readthedocs.io/en/latest/guide/configuration.html"""
+
+WRONG_CREDENTIALS_ERROR = "Authentication failure, check your AWS credentials"
