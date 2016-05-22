@@ -1,7 +1,4 @@
-import os
 import subprocess
-import sys
-
 import click
 
 from .aws_utils import (
@@ -13,23 +10,9 @@ from .settings import (
     ENV_KEY_PATH,
     ENV_SSH_COMMAND_TEMPLATE,
     ENV_SSH_USER,
-    SEPARATOR
+    SEPARATOR,
+    LIBRARY_PATH
 )
-
-
-def get_os_library():
-    if sys.platform.startswith('linux'):
-        lib = 'fzf-0.12.1-linux_386'
-    elif sys.platform == 'darwin':
-        lib = 'fzf-0.12.1-darwin_386'
-    else:
-        print('Currently only MAC OS and Linux are supported, exiting.')
-        exit(1)
-
-    return '{}/{}'.format(
-        os.path.dirname(os.path.abspath(__file__)),
-        lib
-    )
 
 
 @click.command()
@@ -46,7 +29,7 @@ def entrypoint(use_private_ip, key_path, user):
 
     fuzzysearch_bash_command = 'echo -e "{}" | {}'.format(
         "\n".join(searchable_instances),
-        get_os_library()
+        LIBRARY_PATH
     )
 
     try:
