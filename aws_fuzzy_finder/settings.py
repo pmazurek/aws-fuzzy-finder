@@ -7,6 +7,13 @@ ENV_KEY_PATH = os.getenv('AWS_FUZZ_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh {user}@{host} -i {key}")
 
+ENV_USE_REDIS = os.getenv('AWS_FUZZ_REDIS')
+REDIS_HOST = os.getenv('AWS_FUZZ_REDIS_HOST')
+REDIS_PORT = os.getenv('AWS_FUZZ_REDIS_PORT')
+REDIS_DB = os.getenv('AWS_FUZZ_REDIS_DB')
+REDIS_EXPIRE = os.getenv('AWS_FUZZ_REDIS_EXPIRE')
+REDIS_KEY = os.getenv('AWS_FUZZ_REDIS_KEY')
+
 fzf_base = 'fzf-0.12.1'
 is_64_bit = sys.maxsize > 2**32
 
