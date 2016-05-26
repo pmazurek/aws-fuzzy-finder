@@ -7,13 +7,23 @@ ENV_KEY_PATH = os.getenv('AWS_FUZZ_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh {user}@{host} -i {key}")
 
+fzf_base = 'fzf-0.12.1'
+is_64_bit = sys.maxsize > 2**32
+
+if is_64_bit:
+    arch = 'amd64'
+else:
+    arch = '386'
+
 if sys.platform.startswith('linux'):
-    lib = 'fzf-0.12.1-linux_386'
+    system = 'linux'
 elif sys.platform == 'darwin':
-    lib = 'fzf-0.12.1-darwin_386'
+    system = 'darwin'
 else:
     print('Currently only MAC OS and Linux are supported, exiting.')
     exit(1)
+
+lib = '{}-{}_{}'.format(fzf_base, system, arch)
 
 LIBRARY_PATH = '{}/libs/{}'.format(
     os.path.dirname(os.path.abspath(__file__)),
