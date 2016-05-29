@@ -1,8 +1,8 @@
 import subprocess
 import sys
 import click
-import redis
-import pickle
+import shelve
+import time
 
 from .aws_utils import (
     get_aws_instances,
@@ -15,12 +15,9 @@ from .settings import (
     ENV_SSH_USER,
     SEPARATOR,
     LIBRARY_PATH,
-    ENV_USE_REDIS,
-    REDIS_HOST,
-    REDIS_PORT,
-    REDIS_DB,
-    REDIS_EXPIRE,
-    REDIS_KEY
+    CACHE_PATH,
+    CACHE_EXPIRY_TIME,
+    CACHE_ENABLED
 )
 
 
@@ -29,26 +26,24 @@ from .settings import (
 @click.option('--key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
 @click.option('--user', default='ec2-user', help="User to SSH with, default: ec2-user")
 @click.option('--ip-only', 'ip_only', flag_value=True, help="Print chosen IP to STDOUT and exit")
-@click.option('--use-redis', 'use_redis', flag_value=True, help="use redis for caching, default: false")
-@click.option('--rh', default='localhost', help="redis host, default: localhost")
-@click.option('--rp', default='6379', help="redis port, default: 6379")
-@click.option('--rd', default='0', help="redis db id, default: 0")
-@click.option('--re', default='300', help="redis expire time in seconds, default: 300")
-@click.option('--rk', default='aws_fuzzy_finder_data', help="redis key to store data, default: aws_fuzzy_finder_data")
-def entrypoint(use_private_ip, key_path, user, ip_only, use_redis, rh, rp, rd, re, rk):
-    if ENV_USE_REDIS or use_redis:
-        try:
-            r_server = redis.Redis(REDIS_HOST or rh, port=REDIS_PORT or rp, db=REDIS_DB or rd)
-            if not r_server.exists(REDIS_KEY or rk):
-                boto_instance_data = get_aws_instances()
-                r_server.setex(REDIS_KEY or rk, pickle.dumps(boto_instance_data), REDIS_EXPIRE or re)
+@click.option('--no-cache', flag_value=True, help="Ignore and invalidate cache")
+def entrypoint(use_private_ip, key_path, user, ip_only, no_cache):
+
+    try:
+        with shelve.open(CACHE_PATH) as cache:
+            data = cache.get('fuzzy_finder_data')
+            if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+                boto_instance_data = data['aws_instances']
             else:
-                boto_instance_data = pickle.loads(r_server.get(REDIS_KEY or rk))
-        except redis.ConnectionError as redis_err:
-            print("Redis connection error: {}".format(redis_err))
-            exit(1)
-    else:
+                boto_instance_data = get_aws_instances()
+                if CACHE_ENABLED:
+                    cache['fuzzy_finder_data'] = {
+                        'aws_instances': boto_instance_data,
+                        'expiry': time.time() + CACHE_EXPIRY_TIME
+                    }
+    except:
         boto_instance_data = get_aws_instances()
+
 
     searchable_instances = prepare_searchable_instances(
         boto_instance_data['Reservations'],
