@@ -19,7 +19,7 @@ To install use the following command:
 
 `pip install aws-fuzzy-finder`
 
-This package uses `boto` to authenticate, so if you have your `aws-cli`, `ansible` or `boto` 
+This package uses `boto3` to authenticate, so if you have your `aws-cli`, `ansible` or `boto3` 
 configured and working, you can skip the following step, it will work out of the box.
 
 if not, create `~/.aws/credentials` file and make it look like this:
@@ -42,18 +42,34 @@ Options:
   --user TEXT      User to SSH with, default: ec2-user
   --ip-only        Print chosen IP to STDOUT and exit
   --help           Show this message and exit.
+
+  --use-redis      Use redis for caching, default is false
+  --rh HOST        redis host, default: localhost
+  --rp PORT        redis port, default: 6379
+  --rd DB          redis db id, default: 0
+  --re SECONDS     redis expire time in seconds, default: 300
+  --rk KEY         redis key to store data, default: aws_fuzzy_finder_data
+
 ```
 
-Or you can append this to your  ~/.bashrc to make the settings permamant:
+Or you can append this to your  `~/.bashrc` to make the settings permamant:
 ```
 export AWS_FUZZ_USER="your.user"
 export AWS_FUZZ_KEY_PATH="~/.ssh/your_private_key"
 export AWS_FUZZ_PRIVATE_IP='true' # Delete this one if you want to use public IP's
+export AWS_FUZZ_REDIS=1
 
 bind  '"\C-f": "aws-fuzzy\e\C-e\er\C-m"' # This will bind the aws-fuzzy command to ctrl+f
 ```
 
 `AWS_FUZZ_SSH_COMMAND_TEMLPATE` - set this env var if you want to customize the ssh command , defaults to `ssh {user}@{host} -i {key}`
+
+For redis you can set below env vars:
+* `AWS_FUZZ_REDIS_HOST`
+* `AWS_FUZZ_REDIS_PORT`
+* `AWS_FUZZ_REDIS_DB`
+* `AWS_FUZZ_REDIS_EXPIRE`
+* `AWS_FUZZ_REDIS_KEY`
 
 ## Usage
 
@@ -83,3 +99,11 @@ $ ansible --become --ask-become-pass -v -i "$(aws-fuzzy --ip-only)" all -m shell
 
 This will bring an interactive prompt, and the IP of the instance of your choice will
 be used. You can combine it with basically any command you want, sky is the limit now ;)
+
+# Redis as caching
+
+Notice, currently redis is used for caching for AWS results, and by default it is kept for 5 minutes.
+If the key in redis is missing then it will take some time to update the data.
+
+Currently it is not possible to merge multiple results into one big key,
+so any region change without chaning KEY used will overwrite entries form another region.

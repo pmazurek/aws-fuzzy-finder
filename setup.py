@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'boto3==1.3.1',
         'click==6.6',
+        'redis==2.10.5',
     ],
     entry_points=dict(
         console_scripts=[
