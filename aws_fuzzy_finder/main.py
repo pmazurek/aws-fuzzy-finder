@@ -1,5 +1,4 @@
 import subprocess
-import sys
 import click
 import shelve
 import time
@@ -13,6 +12,8 @@ from .settings import (
     ENV_KEY_PATH,
     ENV_SSH_COMMAND_TEMPLATE,
     ENV_SSH_USER,
+    ENV_TUNNEL_SSH_USER,
+    ENV_TUNNEL_KEY_PATH,
     SEPARATOR,
     LIBRARY_PATH,
     CACHE_PATH,
@@ -27,7 +28,10 @@ from .settings import (
 @click.option('--user', default='ec2-user', help="User to SSH with, default: ec2-user")
 @click.option('--ip-only', 'ip_only', flag_value=True, help="Print chosen IP to STDOUT and exit")
 @click.option('--no-cache', flag_value=True, help="Ignore and invalidate cache")
-def entrypoint(use_private_ip, key_path, user, ip_only, no_cache):
+@click.option('--tunnel/--no-tunnel', help="Tunnel to another machine")
+@click.option('--tunnel-key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
+@click.option('--tunnel-user', default='ec2-user', help="User to SSH with, default: ec2-user")
+def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user):
 
     try:
         with shelve.open(CACHE_PATH) as cache:
@@ -44,7 +48,6 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache):
     except:
         boto_instance_data = get_aws_instances()
 
-
     searchable_instances = prepare_searchable_instances(
         boto_instance_data['Reservations'],
         use_private_ip or ENV_USE_PRIVATE_IP
@@ -56,6 +59,24 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache):
         LIBRARY_PATH
     )
 
+    ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
+        user=ENV_SSH_USER or user,
+        key=ENV_KEY_PATH or key_path,
+        host=choice(fuzzysearch_bash_command),
+    )
+
+    if tunnel:
+        ssh_command += " -t " + ENV_SSH_COMMAND_TEMPLATE.format(
+            user=ENV_TUNNEL_SSH_USER or tunnel_user,
+            key=ENV_TUNNEL_KEY_PATH or tunnel_key_path,
+            host=choice(fuzzysearch_bash_command),
+        )
+
+    print(ssh_command)
+    subprocess.call(ssh_command, shell=True, executable='/bin/bash')
+
+
+def choice(fuzzysearch_bash_command):
     try:
         choice = subprocess.check_output(
             fuzzysearch_bash_command,
@@ -65,20 +86,7 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache):
     except subprocess.CalledProcessError:
         exit(1)
 
-    chosen_ip = choice.split(SEPARATOR)[1].rstrip()
-
-    if ip_only:
-        sys.stdout.write(chosen_ip)
-        exit(0)
-    else:
-        ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
-            user=ENV_SSH_USER or user,
-            key=ENV_KEY_PATH or key_path,
-            host=chosen_ip,
-        )
-        # print the ssh command before executing, so that it's clear what is being done
-        print(ssh_command)
-        subprocess.call(ssh_command, shell=True, executable='/bin/bash')
+    return choice.split(SEPARATOR)[1].rstrip()
 
 if __name__ == '__main__':
     entrypoint()
