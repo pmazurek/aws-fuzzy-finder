@@ -12,7 +12,7 @@ ENV_TUNNEL_KEY_PATH = os.getenv('AWS_FUZZ_TUNNEL_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh -i {key} {user}@{host}")
 CACHE_EXPIRY_TIME = os.getenv('AWS_FUZZ_CACHE_EXPIRY', 60)
-CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', True)
+CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
 CACHE_PATH = '{}/{}'.format(
     expanduser("~"),
     '.aws_fuzzy_finder.cache'
