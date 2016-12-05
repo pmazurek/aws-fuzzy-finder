@@ -7,6 +7,7 @@ SEPARATOR = " @ "
 ENV_SSH_USER = os.getenv('AWS_FUZZ_USER')
 ENV_KEY_PATH = os.getenv('AWS_FUZZ_KEY_PATH')
 ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
+ENV_USE_PUBLIC_DNS_OVER_IP = os.getenv('AWS_FUZZ_DNS_OVER_IP', False)  # use public DNS over IP (both public or private)
 ENV_TUNNEL_SSH_USER = os.getenv('AWS_FUZZ_TUNNEL_USER')
 ENV_TUNNEL_KEY_PATH = os.getenv('AWS_FUZZ_TUNNEL_KEY_PATH')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMLPATE', "ssh -i {key} {user}@{host}")
