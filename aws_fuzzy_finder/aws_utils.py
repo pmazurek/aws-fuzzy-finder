@@ -29,6 +29,7 @@ def gather_instance_data(reservations):
             instance_data = {
                 'public_ip': instance.get('PublicIpAddress', ''),
                 'private_ip': instance['PrivateIpAddress'],
+                'public_dns': instance['PublicDnsName'],
                 'tags': instance['Tags']
             }
             instances.append(instance_data)
@@ -55,12 +56,14 @@ def get_aws_instances():
         exit(1)
 
 
-def prepare_searchable_instances(reservations, use_private_ip):
+def prepare_searchable_instances(reservations, use_private_ip, use_public_dns_over_ip):
     instance_data = gather_instance_data(reservations)
     searchable_instances = []
     for instance in instance_data:
         name = get_tag_value('Name', instance['tags'])
-        if use_private_ip:
+        if use_public_dns_over_ip:
+            ip = instance['public_dns']
+        elif use_private_ip:
             ip = instance['private_ip']
         else:
             ip = instance['public_ip'] or instance['private_ip']

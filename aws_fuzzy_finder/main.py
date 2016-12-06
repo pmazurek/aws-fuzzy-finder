@@ -9,6 +9,7 @@ from .aws_utils import (
 )
 from .settings import (
     ENV_USE_PRIVATE_IP,
+    ENV_USE_PUBLIC_DNS_OVER_IP,
     ENV_KEY_PATH,
     ENV_SSH_COMMAND_TEMPLATE,
     ENV_SSH_USER,
@@ -50,7 +51,8 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
 
     searchable_instances = prepare_searchable_instances(
         boto_instance_data['Reservations'],
-        use_private_ip or ENV_USE_PRIVATE_IP
+        use_private_ip or ENV_USE_PRIVATE_IP,
+        ENV_USE_PUBLIC_DNS_OVER_IP
     )
     searchable_instances.sort(reverse=True)
 
