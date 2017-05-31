@@ -35,18 +35,20 @@ from .settings import (
 def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user):
 
     try:
-        with shelve.open(CACHE_PATH) as cache:
-            data = cache.get('fuzzy_finder_data')
-            if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
-                boto_instance_data = data['aws_instances']
-            else:
-                boto_instance_data = get_aws_instances()
-                if CACHE_ENABLED:
-                    cache['fuzzy_finder_data'] = {
-                        'aws_instances': boto_instance_data,
-                        'expiry': time.time() + CACHE_EXPIRY_TIME
-                    }
-    except:
+        cache = shelve.open(CACHE_PATH)
+        data = cache.get('fuzzy_finder_data')
+        if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+            boto_instance_data = data['aws_instances']
+        else:
+            boto_instance_data = get_aws_instances()
+            if CACHE_ENABLED:
+                cache['fuzzy_finder_data'] = {
+                    'aws_instances': boto_instance_data,
+                    'expiry': time.time() + CACHE_EXPIRY_TIME
+                }
+        cache.close()
+    except Exception as e:
+        print e
         boto_instance_data = get_aws_instances()
 
     searchable_instances = prepare_searchable_instances(
