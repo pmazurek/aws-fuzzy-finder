@@ -30,6 +30,7 @@ def gather_instance_data(reservations):
                 'public_ip': instance.get('PublicIpAddress', ''),
                 'private_ip': instance['PrivateIpAddress'],
                 'public_dns': instance['PublicDnsName'],
+                'instance_id': instance.get('InstanceId'),
                 'tags': instance['Tags']
             }
             instances.append(instance_data)
@@ -67,8 +68,9 @@ def prepare_searchable_instances(reservations, use_private_ip, use_public_dns_ov
             ip = instance['private_ip']
         else:
             ip = instance['public_ip'] or instance['private_ip']
-        searchable_instances.append("{}{}{}".format(
+        searchable_instances.append("{}({}){}{}".format(
             name,
+            instance.get('instance_id', ''),
             SEPARATOR,
             ip
         ))
