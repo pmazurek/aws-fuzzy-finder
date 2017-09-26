@@ -29,7 +29,7 @@ def gather_instance_data(reservations):
             instance_data = {
                 'public_ip': instance.get('PublicIpAddress', ''),
                 'private_ip': instance['PrivateIpAddress'],
-                'public_dns': instance['PublicDnsName'],
+                'public_dns': instance.get('PublicDnsName', ''),
                 'instance_id': instance.get('InstanceId'),
                 'tags': instance['Tags']
             }
