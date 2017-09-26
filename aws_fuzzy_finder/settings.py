@@ -18,7 +18,7 @@ CACHE_PATH = '{}/{}'.format(
     '.aws_fuzzy_finder.cache'
 )
 
-fzf_base = 'fzf-0.12.1'
+fzf_base = 'fzf-0.17.0'
 is_64_bit = sys.maxsize > 2**32
 
 if is_64_bit:
