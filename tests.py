@@ -6,6 +6,7 @@ class TestInstanceView:
         u'Groups': [],
         u'Instances': [{
             u'PrivateIpAddress': '10.121.111.123',
+            u'PublicDnsName': 'DNS-foobar',
             u'State': {
                 u'Code': 16,
                 u'Name': 'running'
@@ -17,6 +18,7 @@ class TestInstanceView:
             u'VpcId': 'vpc-f2ccsd34f'
         }, {
             u'PrivateIpAddress': '10.121.12.34',
+            u'PublicDnsName': 'DNS-prod1',
             u'State': {
                 u'Code': 16,
                 u'Name': 'running'
@@ -29,6 +31,7 @@ class TestInstanceView:
         }, {
             u'PrivateIpAddress': '10.121.12.55',
             u'PublicIpAddress': '52.123.12.32',
+            u'PublicDnsName': 'DNS-prod2',
             u'State': {
                 u'Code': 16,
                 u'Name': 'running'
@@ -44,7 +47,8 @@ class TestInstanceView:
     def test_getting_private_ip(self):
         searchable_instances = prepare_searchable_instances(
             reservations=self.example_reservations,
-            use_private_ip=True
+            use_private_ip=True,
+            use_public_dns_over_ip=False,
         )
         assert searchable_instances == [
             'test_foobar @ 10.121.111.123',
@@ -55,10 +59,23 @@ class TestInstanceView:
     def test_getting_public_ip(self):
         searchable_instances = prepare_searchable_instances(
             reservations=self.example_reservations,
-            use_private_ip=False
+            use_private_ip=False,
+            use_public_dns_over_ip=False,
         )
         assert searchable_instances == [
             'test_foobar @ 10.121.111.123',
             'prod_something @ 10.121.12.34',
             'prod_something2 @ 52.123.12.32',
+        ]
+
+    def test_getting_public_dns(self):
+        searchable_instances = prepare_searchable_instances(
+            reservations=self.example_reservations,
+            use_private_ip=False,
+            use_public_dns_over_ip=True
+        )
+        assert searchable_instances == [
+            'test_foobar @ DNS-foobar',
+            'prod_something @ DNS-prod1',
+            'prod_something2 @ DNS-prod2',
         ]
