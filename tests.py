@@ -48,7 +48,7 @@ class TestInstanceView:
         searchable_instances = prepare_searchable_instances(
             reservations=self.example_reservations,
             use_private_ip=True,
-            use_public_dns_over_ip=False
+            use_public_dns_over_ip=False,
         )
         assert searchable_instances == [
             'test_foobar @ 10.121.111.123',
@@ -60,7 +60,7 @@ class TestInstanceView:
         searchable_instances = prepare_searchable_instances(
             reservations=self.example_reservations,
             use_private_ip=False,
-            use_public_dns_over_ip=False
+            use_public_dns_over_ip=False,
         )
         assert searchable_instances == [
             'test_foobar @ 10.121.111.123',
