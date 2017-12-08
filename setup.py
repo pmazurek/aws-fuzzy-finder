@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='aws-fuzzy-finder',
-    version='0.3.5',
+    version='0.3.6',
     url='https://github.com/pmazurek/aws-fuzzy-finder',
     description='SSH into AWS instances using fuzzy search through tags.',
-    download_url='https://github.com/pmazurek/aws-fuzzy-finder/tarball/0.3.5',
+    download_url='https://github.com/pmazurek/aws-fuzzy-finder/tarball/0.3.6',
     author='Piotr Mazurek, Daria Rudkiewicz',
     keywords=['aws', 'ssh', 'fuzzy', 'ec2'],
     packages=['aws_fuzzy_finder'],
