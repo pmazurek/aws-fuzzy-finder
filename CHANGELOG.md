@@ -1,3 +1,36 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.3.6] - 2017-12-08
+
+### Added
+
++ [#15][p15] & [#16][p16]- Add PublicDNS support by @Twista
+
+[p16]: https://github.com/pmazurek/aws-fuzzy-finder/pull/16
+[p15]: https://github.com/pmazurek/aws-fuzzy-finder/pull/15
+
+### Fixed
+
++ [#27][p27] - Fixed `setup.py` to reference correct binary deps by @khornberg
++ [#23][p23] - `PublicDnsName` is optional & fixed invocation of `prepare_searchable_instances`
++ [#17][p17] - Fix typos in env variable names by @flou
+
+[p27]: https://github.com/pmazurek/aws-fuzzy-finder/pull/27
+[p23]: https://github.com/pmazurek/aws-fuzzy-finder/pull/23
+[p17]: https://github.com/pmazurek/aws-fuzzy-finder/pull/17
+
+### Changed
+
++ [#25][p25] - Upgraded fzf libs to v0.17.0
+
+[p25]: https://github.com/pmazurek/aws-fuzzy-finder/pull/25
+
 # 0.3.5
 + Adding tunneling
 + Adding file based cache
