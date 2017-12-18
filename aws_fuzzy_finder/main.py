@@ -2,6 +2,7 @@ import subprocess
 import click
 import shelve
 import time
+import sys
 
 from .aws_utils import (
     get_aws_instances,
@@ -69,10 +70,16 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
     if key:
         key = '-i %s' % (key)
 
+    chosen_host = choice(fuzzysearch_bash_command)
+
+    if ip_only:
+        sys.stdout.write(chosen_host)
+        exit(0)
+
     ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
         user=username,
         key=key,
-        host=choice(fuzzysearch_bash_command),
+        host=chosen_host,
     )
 
     if tunnel:
