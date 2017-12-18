@@ -25,8 +25,8 @@ from .settings import (
 
 @click.command()
 @click.option('--private', 'use_private_ip', flag_value=True, help="Use private IP's")
-@click.option('--key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
-@click.option('--user', default='ec2-user', help="User to SSH with, default: ec2-user")
+@click.option('--key-path', help="Path to your private key")
+@click.option('--user', help="Username to use with SSH command")
 @click.option('--ip-only', 'ip_only', flag_value=True, help="Print chosen IP to STDOUT and exit")
 @click.option('--no-cache', flag_value=True, help="Ignore and invalidate cache")
 @click.option('--tunnel/--no-tunnel', help="Tunnel to another machine")
@@ -63,9 +63,17 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         LIBRARY_PATH
     )
 
+    username = ENV_SSH_USER or user or ''
+    if username:
+        username = '%s@' % (username)
+
+    key = ENV_KEY_PATH or key_path or ''
+    if key:
+        key = '-i %s' % (key)
+
     ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
-        user=ENV_SSH_USER or user,
-        key=ENV_KEY_PATH or key_path,
+        user=username,
+        key=key,
         host=choice(fuzzysearch_bash_command),
     )
 

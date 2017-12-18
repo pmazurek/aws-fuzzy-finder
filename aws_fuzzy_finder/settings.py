@@ -10,7 +10,7 @@ ENV_USE_PRIVATE_IP = os.getenv('AWS_FUZZ_PRIVATE_IP')
 ENV_USE_PUBLIC_DNS_OVER_IP = os.getenv('AWS_FUZZ_DNS_OVER_IP', False)  # use public DNS over IP (both public or private)
 ENV_TUNNEL_SSH_USER = os.getenv('AWS_FUZZ_TUNNEL_USER')
 ENV_TUNNEL_KEY_PATH = os.getenv('AWS_FUZZ_TUNNEL_KEY_PATH')
-ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMPLATE', "ssh -i {key} {user}@{host}")
+ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMPLATE', "ssh {key} {user}{host}")
 CACHE_EXPIRY_TIME = int(os.getenv('AWS_FUZZ_CACHE_EXPIRY', 3600))
 CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
 CACHE_PATH = '{}/{}'.format(
@@ -18,7 +18,7 @@ CACHE_PATH = '{}/{}'.format(
     '.aws_fuzzy_finder.cache'
 )
 
-fzf_base = 'fzf-0.12.1'
+fzf_base = 'fzf-0.17.0'
 is_64_bit = sys.maxsize > 2**32
 
 if is_64_bit:
