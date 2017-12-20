@@ -68,7 +68,7 @@ def prepare_searchable_instances(reservations, use_private_ip, use_public_dns_ov
             ip = instance['private_ip']
         else:
             ip = instance['public_ip'] or instance['private_ip']
-        searchable_instances.append("{}({}){}{}".format(
+        searchable_instances.append("{} ({}){}{}".format(
             name,
             instance.get('instance_id', ''),
             SEPARATOR,
