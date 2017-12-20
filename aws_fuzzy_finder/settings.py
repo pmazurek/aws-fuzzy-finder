@@ -11,7 +11,7 @@ ENV_USE_PUBLIC_DNS_OVER_IP = os.getenv('AWS_FUZZ_DNS_OVER_IP', False)  # use pub
 ENV_TUNNEL_SSH_USER = os.getenv('AWS_FUZZ_TUNNEL_USER')
 ENV_TUNNEL_KEY_PATH = os.getenv('AWS_FUZZ_TUNNEL_KEY_PATH')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMPLATE', "ssh {key} {user}{host}")
-CACHE_EXPIRY_TIME = os.getenv('AWS_FUZZ_CACHE_EXPIRY', 60)
+CACHE_EXPIRY_TIME = int(os.getenv('AWS_FUZZ_CACHE_EXPIRY', 3600))
 CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
 CACHE_PATH = '{}/{}'.format(
     expanduser("~"),
