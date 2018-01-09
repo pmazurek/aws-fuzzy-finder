@@ -64,3 +64,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+
+# Vim
+*.un~
+
+# JetBrains
+.idea/
+
+# VS Code
+.vscode/
