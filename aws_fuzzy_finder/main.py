@@ -110,5 +110,6 @@ def choice(fuzzysearch_bash_command):
 
     return choice.split(SEPARATOR)[1].rstrip()
 
+
 if __name__ == '__main__':
     entrypoint()
