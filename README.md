@@ -92,8 +92,8 @@ export AWS_FUZZ_USE_CACHE=yes
 export AWS_FUZZ_CACHE_EXPIRY=3600  # expiry time in seconds
 ```
 
-To invalidate cache and refresh data, run with `--no-cache` param
-Cache will be stored as a file in `~/.aws_fuzzy_finder.cache`.
+To invalidate cache and refresh data, run with `--no-cache` param.
+Cache will be stored as a file in `~/.aws_fuzzy_finder.cache/` directory.
 
 ## Tunneling
 
