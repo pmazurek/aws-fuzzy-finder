@@ -1,4 +1,5 @@
 import boto3
+import boto3_session_cache
 from botocore.exceptions import (
     NoRegionError,
     PartialCredentialsError,
@@ -41,7 +42,7 @@ def get_tag_value(tag_name, tags):
 
 def get_aws_instances():
     try:
-        return boto3.client('ec2').describe_instances()
+        return boto3_session_cache.client('ec2').describe_instances()
     except NoRegionError:
         print(NO_REGION_ERROR)
         exit(1)
