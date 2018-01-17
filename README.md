@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pmazurek/aws-fuzzy-finder.svg?branch=master)](https://travis-ci.org/pmazurek/aws-fuzzy-finder)
+
 # AWS Fuzzy Finder
 
 `aws-fuzzy-finder` aims at one thing: making the process of finding the IPs and SSH'ing into your EC2 instances super fast and easy. It will connect with AWS, automatically grab all the instances you have access to, and present them to you in a fuzzy searchable way!
