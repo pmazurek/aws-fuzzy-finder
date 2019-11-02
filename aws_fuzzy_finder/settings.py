@@ -14,8 +14,8 @@ ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMPLATE', "ssh {key}
 ENV_AWS_REGIONS = os.getenv('AWS_FUZZ_AWS_REGIONS', '')
 CACHE_EXPIRY_TIME = int(os.getenv('AWS_FUZZ_CACHE_EXPIRY', 3600))
 CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
-AWS_DEFAULT_PROFILE=os.getenv('AWS_DEFAULT_PROFILE', '_noprofile')
-CACHE_DIR = '{}/{}'.format(expanduser("~"), '.aws_fuzzy_finder.cache')
+AWS_DEFAULT_PROFILE=os.getenv('AWS_DEFAULT_PROFILE', 'default')
+CACHE_DIR = '{}/{}'.format(expanduser("~"), '.aws_fuzzy_finder_cache')
 CACHE_PATH = '{}/{}'.format(CACHE_DIR, AWS_DEFAULT_PROFILE)
 
 fzf_base = 'fzf-0.17.0'
