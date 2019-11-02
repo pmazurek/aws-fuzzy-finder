@@ -15,7 +15,7 @@ To install use the following command:
 
 `pip install aws-fuzzy-finder`
 
-This package uses `boto` to authenticate, so if you have your `aws-cli` or `ansible` 
+This package uses `boto` to authenticate, so if you have your `aws-cli` or `ansible`
 configured and working, you can skip the following step, it will work out of the box.
 
 if not, create `~/.aws/credentials` file and make it look like this:
@@ -45,6 +45,18 @@ Remeber that every change to `~/.bashrc` requires you to re-load it: `source ~/.
 
 `AWS_FUZZ_SSH_COMMAND_TEMPLATE` - set this env var if you want to customize the ssh command , defaults to `ssh {key} {user}{host}`
 
+## Multiple Regions
+Getting instances from multiple regions instead of just one.
+If you have a large amount of instances adding more regions will significantly slow down the initial collection of data before it is presented to you on the screen.
+
+This is optional, aws-fuzzy will use the `AWS_DEFAULT_REGION` by default and using the multiple regions option will ignore this.
+
+In your `~/.bashrc` append a list of AWS Regions separated by a comma and nothing else. The lists minimum size is one and has no maximum.
+
+`AWS_FUZZ_REGIONS="us-west-2,us-east-1,eu-central-1,ap-southeast-2,ap-northeast-1"`
+
+List of AWS Regions can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
+
 ## Usage
 
 To run, use the following command:
@@ -65,7 +77,7 @@ It is very convenient to bind various aws-fuzzy profiles/settings to keys. This 
 bind  '"\C-f": "aws-fuzzy\e\C-e\er\C-m"'
 
 # You can bind different settings to different keys
-bind  '"\C-a": "AWS_DEFAULT_PROFILE=production aws-fuzzy --private\e\C-e\er\C-m"' 
+bind  '"\C-a": "AWS_DEFAULT_PROFILE=production aws-fuzzy --private\e\C-e\er\C-m"'
 ```
 
 
@@ -161,4 +173,3 @@ If you `head -n1 ~/.local/bin/aws` you should see something like:
 This is essentially telling the "binary" to use the virtual environment we specifically created just for this tool.
 
 No more conflicts!!!
-

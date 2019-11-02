@@ -16,6 +16,7 @@ from .settings import (
     ENV_SSH_USER,
     ENV_TUNNEL_SSH_USER,
     ENV_TUNNEL_KEY_PATH,
+    AWS_REGIONS,
     SEPARATOR,
     LIBRARY_PATH,
     CACHE_PATH,
@@ -42,7 +43,10 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
             boto_instance_data = data['aws_instances']
         else:
-            boto_instance_data = get_aws_instances()
+            boto_instance_data = {}
+            for region in AWS_REGIONS:
+                current_region_data = get_aws_instances(region)
+                boto_instance_data[region] = current_region_data
             if CACHE_ENABLED:
                 cache['fuzzy_finder_data'] = {
                     'aws_instances': boto_instance_data,
@@ -53,10 +57,14 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         print('Exception occured while getting cache, getting instances from AWS api: %s' % e)
         if cache:
             cache.close()
-        boto_instance_data = get_aws_instances()
+        boto_instance_data = {}
+        for region in AWS_REGIONS:
+            current_region_data = get_aws_instances(region)
+            boto_instance_data[region] = current_region_data
 
     searchable_instances = prepare_searchable_instances(
-        boto_instance_data['Reservations'],
+        AWS_REGIONS,
+        boto_instance_data,
         use_private_ip or ENV_USE_PRIVATE_IP,
         ENV_USE_PUBLIC_DNS_OVER_IP
     )

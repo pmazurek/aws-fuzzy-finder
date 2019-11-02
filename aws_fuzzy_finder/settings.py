@@ -11,6 +11,7 @@ ENV_USE_PUBLIC_DNS_OVER_IP = os.getenv('AWS_FUZZ_DNS_OVER_IP', False)  # use pub
 ENV_TUNNEL_SSH_USER = os.getenv('AWS_FUZZ_TUNNEL_USER')
 ENV_TUNNEL_KEY_PATH = os.getenv('AWS_FUZZ_TUNNEL_KEY_PATH')
 ENV_SSH_COMMAND_TEMPLATE = os.getenv('AWS_FUZZ_SSH_COMMAND_TEMPLATE', "ssh {key} {user}{host}")
+ENV_AWS_REGIONS = os.getenv('AWS_FUZZ_AWS_REGIONS', '')
 CACHE_EXPIRY_TIME = int(os.getenv('AWS_FUZZ_CACHE_EXPIRY', 3600))
 CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
 CACHE_PATH = '{}/{}'.format(
@@ -40,6 +41,12 @@ LIBRARY_PATH = '{}/libs/{}'.format(
     os.path.dirname(os.path.abspath(__file__)),
     lib
 )
+
+if len(ENV_AWS_REGIONS) != 0:
+    regions = ENV_AWS_REGIONS.split(",")
+else:
+    regions = [os.getenv("AWS_DEFAULT_REGION")]
+AWS_REGIONS = regions
 
 NO_REGION_ERROR = """No AWS region specified.
 Specify region in your boto config or add a "AWS_DEFAULT_REGION" environment variable.
