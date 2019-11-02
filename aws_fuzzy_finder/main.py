@@ -3,6 +3,7 @@ import click
 import shelve
 import time
 import sys
+import os
 
 from .aws_utils import (
     get_aws_instances,
@@ -19,6 +20,7 @@ from .settings import (
     AWS_REGIONS,
     SEPARATOR,
     LIBRARY_PATH,
+    CACHE_DIR,
     CACHE_PATH,
     CACHE_EXPIRY_TIME,
     CACHE_ENABLED
@@ -35,6 +37,9 @@ from .settings import (
 @click.option('--tunnel-key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
 @click.option('--tunnel-user', default='ec2-user', help="User to SSH with, default: ec2-user")
 def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user):
+
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
 
     try:
         cache = None
