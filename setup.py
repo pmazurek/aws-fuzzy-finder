@@ -16,9 +16,8 @@ setup(
         'libs/fzf-0.17.0-darwin_amd64',
     ]},
     install_requires=[
-        'boto3==1.3.1',
-        'click>=6.6',
-        'boto3-session-cache==1.0.2'
+        'boto3>=1.3.1',
+        'click>=6.6'
     ],
     entry_points=dict(
         console_scripts=[
