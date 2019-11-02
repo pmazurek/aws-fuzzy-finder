@@ -17,7 +17,7 @@ setup(
     ]},
     install_requires=[
         'boto3==1.3.1',
-        'click==6.6',
+        'click>=6.6',
         'boto3-session-cache==1.0.2'
     ],
     entry_points=dict(
