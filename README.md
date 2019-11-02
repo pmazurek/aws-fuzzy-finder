@@ -15,7 +15,11 @@ To install use the following command:
 
 `pip install aws-fuzzy-finder`
 
-This package uses `boto` to authenticate, so if you have your `aws-cli` or `ansible` 
+Manual install steps:
+    1. Clone the repo
+    2. In the repo directory run `python setup.py install`
+
+This package uses `boto` to authenticate, so if you have your `aws-cli` or `ansible`
 configured and working, you can skip the following step, it will work out of the box.
 
 if not, create `~/.aws/credentials` file and make it look like this:
@@ -65,7 +69,7 @@ It is very convenient to bind various aws-fuzzy profiles/settings to keys. This 
 bind  '"\C-f": "aws-fuzzy\e\C-e\er\C-m"'
 
 # You can bind different settings to different keys
-bind  '"\C-a": "AWS_DEFAULT_PROFILE=production aws-fuzzy --private\e\C-e\er\C-m"' 
+bind  '"\C-a": "AWS_DEFAULT_PROFILE=production aws-fuzzy --private\e\C-e\er\C-m"'
 ```
 
 
@@ -161,4 +165,3 @@ If you `head -n1 ~/.local/bin/aws` you should see something like:
 This is essentially telling the "binary" to use the virtual environment we specifically created just for this tool.
 
 No more conflicts!!!
-
