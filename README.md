@@ -15,6 +15,10 @@ To install use the following command:
 
 `pip install aws-fuzzy-finder`
 
+Manual install steps:
+    1. Clone the repo
+    2. In the repo directory run `python setup.py install`
+
 This package uses `boto` to authenticate, so if you have your `aws-cli` or `ansible`
 configured and working, you can skip the following step, it will work out of the box.
 
