@@ -1,5 +1,5 @@
+import os
 import boto3
-import boto3_session_cache
 from botocore.exceptions import (
     NoRegionError,
     PartialCredentialsError,
@@ -15,22 +15,23 @@ from .settings import (
 )
 
 
-def gather_instance_data(reservations):
+def gather_instance_data(aws_regions, instance_data):
     instances = []
+    for region in aws_regions:
+        reservations = instance_data[region]
+        for reservation in reservations['Reservations']:
+            for instance in reservation['Instances']:
+                if instance['State']['Name'] != 'running':
+                    continue
 
-    for reservation in reservations:
-        for instance in reservation['Instances']:
-            if instance['State']['Name'] != 'running':
-                continue
-
-            instance_data = {
-                'public_ip': instance.get('PublicIpAddress', ''),
-                'private_ip': instance['PrivateIpAddress'],
-                'public_dns': instance.get('PublicDnsName', ''),
-                'instance_id': instance.get('InstanceId'),
-                'tags': instance.get('Tags', []),
-            }
-            instances.append(instance_data)
+                data = {
+                    'public_ip': instance.get('PublicIpAddress', ''),
+                    'private_ip': instance['PrivateIpAddress'],
+                    'public_dns': instance.get('PublicDnsName', ''),
+                    'instance_id': instance.get('InstanceId'),
+                    'tags': instance.get('Tags', []),
+                }
+                instances.append(data)
     return instances
 
 
@@ -40,9 +41,10 @@ def get_tag_value(tag_name, tags):
             return tag['Value'].replace('"', '')
 
 
-def get_aws_instances():
+def get_aws_instances(region):
     try:
-        return boto3_session_cache.client('ec2').describe_instances()
+        os.environ["AWS_DEFAULT_REGION"] = region
+        return boto3.client('ec2').describe_instances()
     except NoRegionError:
         print(NO_REGION_ERROR)
         exit(1)
@@ -54,11 +56,11 @@ def get_aws_instances():
         exit(1)
 
 
-def prepare_searchable_instances(reservations, use_private_ip, use_public_dns_over_ip):
-    instance_data = gather_instance_data(reservations)
+def prepare_searchable_instances(aws_regions, instance_data, use_private_ip, use_public_dns_over_ip):
+    processed_data = gather_instance_data(aws_regions, instance_data)
     searchable_instances = []
 
-    for instance in instance_data:
+    for instance in processed_data:
         name = get_tag_value('Name', instance['tags'])
 
         if use_public_dns_over_ip:

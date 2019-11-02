@@ -49,6 +49,18 @@ Remeber that every change to `~/.bashrc` requires you to re-load it: `source ~/.
 
 `AWS_FUZZ_SSH_COMMAND_TEMPLATE` - set this env var if you want to customize the ssh command , defaults to `ssh {key} {user}{host}`
 
+## Multiple Regions
+Getting instances from multiple regions instead of just one.
+If you have a large amount of instances adding more regions will significantly slow down the initial collection of data before it is presented to you on the screen.
+
+This is optional, aws-fuzzy will use the `AWS_DEFAULT_REGION` by default and using the multiple regions option will ignore this.
+
+In your `~/.bashrc` append a list of AWS Regions separated by a comma and nothing else. The lists minimum size is one and has no maximum.
+
+`AWS_FUZZ_REGIONS="us-west-2,us-east-1,eu-central-1,ap-southeast-2,ap-northeast-1"`
+
+List of AWS Regions can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
+
 ## Usage
 
 To run, use the following command:
