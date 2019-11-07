@@ -41,7 +41,7 @@ LIBRARY_PATH = '{}/libs/{}'.format(
     lib
 )
 
-if len(ENV_AWS_REGIONS) != 0:
+if ENV_AWS_REGIONS:
     regions = ENV_AWS_REGIONS.split(",")
 else:
     regions = [os.getenv("AWS_DEFAULT_REGION")]
