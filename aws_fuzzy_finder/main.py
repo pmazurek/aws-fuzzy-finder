@@ -45,8 +45,13 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         cache = None
         cache = shelve.open(CACHE_PATH)
         data = cache.get('fuzzy_finder_data')
-        if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+        # if you have set your cache to never expire
+        if CACHE_ENABLED and data and CACHE_EXPIRY_TIME == 0 and not no_cache:
             boto_instance_data = data['aws_instances']
+        # if you set your cache to expire, check if it has expired
+        elif CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+            boto_instance_data = data['aws_instances']
+        # there is no cache file or it is expired or --no-cache was used to refresh data
         else:
             boto_instance_data = {}
             for region in AWS_REGIONS:

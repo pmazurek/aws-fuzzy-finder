@@ -16,7 +16,7 @@ To install use the following command:
 `pip install aws-fuzzy-finder`
 
 #### Manual install steps:
-    
+
 1. Clone the repo
 2. In the repo directory run `python setup.py install`
 
@@ -111,8 +111,9 @@ export AWS_FUZZ_USE_CACHE=yes
 export AWS_FUZZ_CACHE_EXPIRY=3600  # expiry time in seconds
 ```
 
+If you set `AWS_FUZZ_CACHE_EXPIRY=0` to zero, it will never expire your cache.
 To invalidate cache and refresh data, run with `--no-cache` param.
-Cache will be stored as a file in `~/.aws_fuzzy_finder.cache/` directory.
+Cache will be stored as a file in `~/.aws_fuzzy_finder_cache/` directory per AWS profile.
 
 ## Tunneling
 
@@ -120,61 +121,61 @@ If you have to access your instances through a gateway instance, use the `--tunn
 
 Gateway must be allowed to access the instance with its own ssh key. You may set the user and key path spearately using `--tunnel-user` and `--tunnel-key-path` params. The key will be looked up ON the gateway instace.
 
-## Dependency conflicts/ Virtualenvs	
+## Dependency conflicts/ Virtualenvs
 
-It's 2018, Summer and you are using `pip` to install `aws-fuzzy-finder` along with `awscli` on the same machine, but it fails, you see errors about botocore, you become sad.	
-You want to be able to use both tools in a convenient and easy way. You accept that some initial configuration is OK, and a happy life afterwards is great, you are no longer sad.	
+It's 2018, Summer and you are using `pip` to install `aws-fuzzy-finder` along with `awscli` on the same machine, but it fails, you see errors about botocore, you become sad.
+You want to be able to use both tools in a convenient and easy way. You accept that some initial configuration is OK, and a happy life afterwards is great, you are no longer sad.
 
-Firstly we will need, python setup tools and virtualenv as provided by your distribution. (I assume you are using a Linux).	
+Firstly we will need, python setup tools and virtualenv as provided by your distribution. (I assume you are using a Linux).
 
-We will modify our pip config, so that packages installed with pip are always installed locally to / for the user, because you probably will not be running aws-fuzzy-finder as a system service.	
+We will modify our pip config, so that packages installed with pip are always installed locally to / for the user, because you probably will not be running aws-fuzzy-finder as a system service.
 
 
-Create a file in your home >> .config >> pip directory:	
+Create a file in your home >> .config >> pip directory:
 
-```	
-~/.config/pip/pip.conf	
-```	
+```
+~/.config/pip/pip.conf
+```
 
-add this to the file	
+add this to the file
 
-```	
-[install]	
-user = yes	
-no-binary = :all:	
-```	
+```
+[install]
+user = yes
+no-binary = :all:
+```
 
-Then we will create a directory where we will store all the virtual environments for all tools that we might want to install like this.	
+Then we will create a directory where we will store all the virtual environments for all tools that we might want to install like this.
 
-```	
-mkdir -p ~/.virtualenvs	
-```	
+```
+mkdir -p ~/.virtualenvs
+```
 
-Now let's install awscli:	
+Now let's install awscli:
 
-```	
-cd ~/.virtualenvs	
-virtualenv --system-site-packages -p python3 awscli	
-. awscli/bin/activate	
-pip install awscli	
-deactivate	
-```	
+```
+cd ~/.virtualenvs
+virtualenv --system-site-packages -p python3 awscli
+. awscli/bin/activate
+pip install awscli
+deactivate
+```
 
-Now let's install aws-fuzzy-finder:	
+Now let's install aws-fuzzy-finder:
 
-```	
-cd ~/.virtualenvs	
-virtualenv --system-site-packages -p python3 aws-fuzzy-finder	
-. aws-fuzzy-finder/bin/activate	
-pip install aws-fuzzy-finder	
-deactivate	
-```	
+```
+cd ~/.virtualenvs
+virtualenv --system-site-packages -p python3 aws-fuzzy-finder
+. aws-fuzzy-finder/bin/activate
+pip install aws-fuzzy-finder
+deactivate
+```
 
-Now, in your `~/.local/bin/` directory, you should see `aws` "binary" and a `aws-fuzzy` "binary".	
-If you `head -n1 ~/.local/bin/aws` you should see something like:	
-```	
-#!/home/your-user-name/.virtualenvs/awscli/bin/python	
-```	
-This is essentially telling the "binary" to use the virtual environment we specifically created just for this tool.	
+Now, in your `~/.local/bin/` directory, you should see `aws` "binary" and a `aws-fuzzy` "binary".
+If you `head -n1 ~/.local/bin/aws` you should see something like:
+```
+#!/home/your-user-name/.virtualenvs/awscli/bin/python
+```
+This is essentially telling the "binary" to use the virtual environment we specifically created just for this tool.
 
-No more conflicts!!!	
+No more conflicts!!!
