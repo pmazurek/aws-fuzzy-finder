@@ -1,4 +1,3 @@
-import os
 import boto3
 from botocore.exceptions import (
     NoRegionError,
@@ -43,8 +42,7 @@ def get_tag_value(tag_name, tags):
 
 def get_aws_instances(region):
     try:
-        os.environ["AWS_DEFAULT_REGION"] = region
-        return boto3.client('ec2').describe_instances()
+        return boto3.client('ec2', region_name=region).describe_instances()
     except NoRegionError:
         print(NO_REGION_ERROR)
         exit(1)
