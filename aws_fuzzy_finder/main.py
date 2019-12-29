@@ -3,6 +3,7 @@ import click
 import shelve
 import time
 import sys
+import os
 
 from .aws_utils import (
     get_aws_instances,
@@ -16,8 +17,10 @@ from .settings import (
     ENV_SSH_USER,
     ENV_TUNNEL_SSH_USER,
     ENV_TUNNEL_KEY_PATH,
+    AWS_REGIONS,
     SEPARATOR,
     LIBRARY_PATH,
+    CACHE_DIR,
     CACHE_PATH,
     CACHE_EXPIRY_TIME,
     CACHE_ENABLED
@@ -35,14 +38,25 @@ from .settings import (
 @click.option('--tunnel-user', default='ec2-user', help="User to SSH with, default: ec2-user")
 def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user):
 
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
+
     try:
         cache = None
         cache = shelve.open(CACHE_PATH)
         data = cache.get('fuzzy_finder_data')
-        if CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+        # if you have set your cache to never expire
+        if CACHE_ENABLED and data and CACHE_EXPIRY_TIME == 0 and not no_cache:
             boto_instance_data = data['aws_instances']
+        # if you set your cache to expire, check if it has expired
+        elif CACHE_ENABLED and data and data.get('expiry') >= time.time() and not no_cache:
+            boto_instance_data = data['aws_instances']
+        # there is no cache file or it is expired or --no-cache was used to refresh data
         else:
-            boto_instance_data = get_aws_instances()
+            boto_instance_data = {}
+            for region in AWS_REGIONS:
+                current_region_data = get_aws_instances(region)
+                boto_instance_data[region] = current_region_data
             if CACHE_ENABLED:
                 cache['fuzzy_finder_data'] = {
                     'aws_instances': boto_instance_data,
@@ -53,10 +67,14 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         print('Exception occured while getting cache, getting instances from AWS api: %s' % e)
         if cache:
             cache.close()
-        boto_instance_data = get_aws_instances()
+        boto_instance_data = {}
+        for region in AWS_REGIONS:
+            current_region_data = get_aws_instances(region)
+            boto_instance_data[region] = current_region_data
 
     searchable_instances = prepare_searchable_instances(
-        boto_instance_data['Reservations'],
+        AWS_REGIONS,
+        boto_instance_data,
         use_private_ip or ENV_USE_PRIVATE_IP,
         ENV_USE_PUBLIC_DNS_OVER_IP
     )
