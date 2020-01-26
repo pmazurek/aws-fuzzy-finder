@@ -6,6 +6,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.0] - 2019-12-29
+
+### Added
++ [#36][p36] Added support for multiple AWS regions by @sergekh42
+
+### Changed
+
++ [#33][p33] Creates a different cache for each aws profile by @joaogbcravo
++ [#36][p36] Removed deprecated `boto3-session-cache` by @sergekh42
++ [#37][p37] We no longer run test this package on TravisCI with Python versions that effectively reached EOL (2.7, 3.4).
+  However we added 3.7 (stable) and 3.8.
+
+[p33]: https://github.com/pmazurek/aws-fuzzy-finder/pull/33
+[p36]: https://github.com/pmazurek/aws-fuzzy-finder/pull/36
+[p37]: https://github.com/pmazurek/aws-fuzzy-finder/pull/37
+
+## [1.0.0] - 2018-11-21
+
+### Added
+
++ [#32][p32] Added Boto3 Session Cache by @joaogbcravo
+
+[p32]: https://github.com/pmazurek/aws-fuzzy-finder/pull/32
+
 ## [0.3.6] - 2017-12-08
 
 ### Added
