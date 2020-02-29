@@ -16,7 +16,7 @@ CACHE_EXPIRY_TIME = int(os.getenv('AWS_FUZZ_CACHE_EXPIRY', 3600))
 CACHE_ENABLED = os.getenv('AWS_FUZZ_USE_CACHE', False)
 AWS_DEFAULT_PROFILE=os.getenv('AWS_DEFAULT_PROFILE', 'default')
 CACHE_DIR = '{}/{}'.format(expanduser("~"), '.aws_fuzzy_finder_cache')
-CACHE_PATH = '{}/{}'.format(CACHE_DIR, AWS_DEFAULT_PROFILE)
+CACHE_PATH = '{}/{}'.format(CACHE_DIR, os.getenv('AWS_PROFILE', AWS_DEFAULT_PROFILE))
 
 fzf_base = 'fzf-0.17.0'
 is_64_bit = sys.maxsize > 2**32
