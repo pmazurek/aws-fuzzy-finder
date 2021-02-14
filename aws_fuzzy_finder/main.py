@@ -14,10 +14,13 @@ from .settings import (
     ENV_USE_PUBLIC_DNS_OVER_IP,
     ENV_KEY_PATH,
     ENV_SSH_COMMAND_TEMPLATE,
+    ENV_SSM_COMMAND_TEMPLATE,
+    ENV_USE_SSM,
     ENV_SSH_USER,
     ENV_TUNNEL_SSH_USER,
     ENV_TUNNEL_KEY_PATH,
     AWS_REGIONS,
+    AWS_DEFAULT_PROFILE,
     SEPARATOR,
     LIBRARY_PATH,
     CACHE_DIR,
@@ -36,7 +39,8 @@ from .settings import (
 @click.option('--tunnel/--no-tunnel', help="Tunnel to another machine")
 @click.option('--tunnel-key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
 @click.option('--tunnel-user', default='ec2-user', help="User to SSH with, default: ec2-user")
-def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user):
+@click.option('--ssm', 'use_ssm', flag_value=True, help="Tell the tool internally find the instance id and use AWS SSM")
+def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user, use_ssm):
 
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
@@ -64,7 +68,7 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
                 }
         cache.close()
     except Exception as e:
-        print('Exception occured while getting cache, getting instances from AWS api: %s' % e)
+        print('Exception occurred while getting cache, getting instances from AWS api: %s' % e)
         if cache:
             cache.close()
         boto_instance_data = {}
@@ -85,38 +89,47 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
         LIBRARY_PATH
     )
 
-    username = ENV_SSH_USER or user or ''
-    if username:
-        username = '%s@' % (username)
+    chosen_host = choice(fuzzysearch_bash_command, use_ssm)
 
-    key = ENV_KEY_PATH or key_path or ''
-    if key:
-        key = '-i %s' % (key)
+    if use_ssm or ENV_USE_SSM:
+        ssm_command = ENV_SSM_COMMAND_TEMPLATE.format(
+            profile=AWS_DEFAULT_PROFILE,
+            target=chosen_host,
+        )
+        print(ssm_command)
+        subprocess.call(ssm_command, shell=True, executable='/bin/bash')
+    else:
+        if ip_only:
+            sys.stdout.write(chosen_host)
+            exit(0)
 
-    chosen_host = choice(fuzzysearch_bash_command)
+        username = ENV_SSH_USER or user or ''
+        if username:
+            username = '%s@' % (username)
 
-    if ip_only:
-        sys.stdout.write(chosen_host)
-        exit(0)
+        key = ENV_KEY_PATH or key_path or ''
+        if key:
+            key = '-i %s' % (key)
 
-    ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
-        user=username,
-        key=key,
-        host=chosen_host,
-    )
-
-    if tunnel:
-        ssh_command += " -t " + ENV_SSH_COMMAND_TEMPLATE.format(
-            user=ENV_TUNNEL_SSH_USER or tunnel_user,
-            key=ENV_TUNNEL_KEY_PATH or tunnel_key_path,
-            host=choice(fuzzysearch_bash_command),
+        ssh_command = ENV_SSH_COMMAND_TEMPLATE.format(
+            user=username,
+            key=key,
+            host=chosen_host,
         )
 
-    print(ssh_command)
-    subprocess.call(ssh_command, shell=True, executable='/bin/bash')
+        if tunnel:
+            ssh_command += " -t " + ENV_SSH_COMMAND_TEMPLATE.format(
+                user=ENV_TUNNEL_SSH_USER or tunnel_user,
+                key=ENV_TUNNEL_KEY_PATH or tunnel_key_path,
+                host=choice(fuzzysearch_bash_command),
+            )
+
+        print(ssh_command)
+        subprocess.call(ssh_command, shell=True, executable='/bin/bash')
 
 
-def choice(fuzzysearch_bash_command):
+def choice(fuzzysearch_bash_command, use_ssm):
+    output = ""  # used to collect the value returned
     try:
         choice = subprocess.check_output(
             fuzzysearch_bash_command,
@@ -126,7 +139,11 @@ def choice(fuzzysearch_bash_command):
     except subprocess.CalledProcessError:
         exit(1)
 
-    return choice.split(SEPARATOR)[1].rstrip()
+    if use_ssm:
+        output = choice.split(' ')[1].replace('(', '').replace(')', '').rstrip()
+    else:
+        output = choice.split(SEPARATOR)[1].rstrip()
+    return output
 
 
 if __name__ == '__main__':
