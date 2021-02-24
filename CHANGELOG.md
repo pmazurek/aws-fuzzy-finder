@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.1] - 2021-02-24
+
+### Added
+
++ [#40][p40] Adding support for aws SSM by @jwhaley-togetherwork
+
+### Changed
+
++ [#39][p39] Fix for cache behaviour by @AndreZiviani
+
+[p40]: https://github.com/pmazurek/aws-fuzzy-finder/pull/40
+[p39]: https://github.com/pmazurek/aws-fuzzy-finder/pull/39
+
 ## [1.1.0] - 2019-12-29
 
 ### Added
