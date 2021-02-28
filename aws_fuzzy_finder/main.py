@@ -40,8 +40,8 @@ from .settings import (
 @click.option('--tunnel-key-path', default='~/.ssh/id_rsa', help="Path to your private key, default: ~/.ssh/id_rsa")
 @click.option('--tunnel-user', default='ec2-user', help="User to SSH with, default: ec2-user")
 @click.option('--ssm', 'use_ssm', flag_value=True, help="Tell the tool internally find the instance id and use AWS SSM")
-def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user, use_ssm):
-
+@click.option('--id-only', 'id_only', flag_value=True, help="Print chosen Instance ID to STDOUT and exit")
+def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel_key_path, tunnel_user, use_ssm, id_only):
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
 
@@ -91,7 +91,11 @@ def entrypoint(use_private_ip, key_path, user, ip_only, no_cache, tunnel, tunnel
 
     chosen_host = choice(fuzzysearch_bash_command, use_ssm)
 
-    if use_ssm or ENV_USE_SSM:
+    if ENV_USE_SSM or use_ssm:
+        if id_only:
+            sys.stdout.write(chosen_host)
+            exit(0)
+
         ssm_command = ENV_SSM_COMMAND_TEMPLATE.format(
             profile=AWS_DEFAULT_PROFILE,
             target=chosen_host,
