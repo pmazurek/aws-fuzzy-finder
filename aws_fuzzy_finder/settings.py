@@ -1,5 +1,6 @@
 import os
 import sys
+import platform
 
 from os.path import expanduser
 
@@ -20,13 +21,12 @@ AWS_DEFAULT_PROFILE=os.getenv('AWS_DEFAULT_PROFILE', 'default')
 CACHE_DIR = '{}/{}'.format(expanduser("~"), '.aws_fuzzy_finder_cache')
 CACHE_PATH = '{}/{}'.format(CACHE_DIR, os.getenv('AWS_PROFILE', AWS_DEFAULT_PROFILE))
 
-fzf_base = 'fzf-0.17.0'
-is_64_bit = sys.maxsize > 2**32
+fzf_base = 'fzf-0.29.0'
 
-if is_64_bit:
+if platform.processor() == 'i386':
     arch = 'amd64'
-else:
-    arch = '386'
+elif platform.processor() == 'arm':
+    arch = 'arm64'
 
 if sys.platform.startswith('linux'):
     system = 'linux'

@@ -10,6 +10,7 @@ setup(
     keywords=['aws', 'ssh', 'fuzzy', 'ec2'],
     packages=['aws_fuzzy_finder'],
     package_data={'': [
+        'libs/fzf-0.28.0-darwin_arm64',
         'libs/fzf-0.17.0-linux_386',
         'libs/fzf-0.17.0-linux_amd64',
         'libs/fzf-0.17.0-darwin_386',
