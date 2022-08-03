@@ -15,7 +15,7 @@ To install use the following command:
 
 `pip install aws-fuzzy-finder`
 
-#### Manual install steps:
+#### Manual installation steps:
 
 1. Clone the repo
 2. In the repo directory run `python setup.py install`
@@ -36,23 +36,23 @@ More information on alternative ways of configuring your `AWS_ACCESS_KEY_ID`, `A
 
 ## Settings
 
-You will need to set the user you want to SSH with and the path to your ssh key. `--ssh-user` will default to `ec2-user` and `--key-path` will default to `~/.ssh/id_rsa` so if you use defaults, you can skip this step.
+You will need to set the user you want to SSH with, and the path to your ssh key. `--ssh-user` will default to `ec2-user` and `--key-path` will default to `~/.ssh/id_rsa` so if you use defaults, you can skip this step.
 
-If you want to use private IP's instead of public ones, use `--private` flag.
+If you want to use private IPs instead of public ones, use `--private` flag.
 
-Either use the command line params, or you can append this to your  `~/.bashrc` to make the settings permamant:
+Either use the command line params, or you can append this to your  `~/.bashrc` to make the settings permanent:
 ```
 export AWS_FUZZ_USER="your.user"
 export AWS_FUZZ_KEY_PATH="~/.ssh/your_private_key"
 export AWS_FUZZ_PRIVATE_IP='true' # Delete this one if you want to use public IP's
 ```
-Remeber that every change to `~/.bashrc` requires you to re-load it: `source ~/.bashrc` or restart terminal.
+Remember that every change to `~/.bashrc` requires you to re-load it: `source ~/.bashrc` or restart terminal.
 
 `AWS_FUZZ_SSH_COMMAND_TEMPLATE` - set this env var if you want to customize the ssh command , defaults to `ssh {key} {user}{host}`
 
 ## Multiple Regions
 Getting instances from multiple regions instead of just one.
-If you have a large amount of instances adding more regions will significantly slow down the initial collection of data before it is presented to you on the screen.
+A word of caution, if you have a large amount of instances adding more regions will significantly slow down the initial collection of data before it is presented to you on the screen.
 
 This is optional, aws-fuzzy will use the `AWS_DEFAULT_REGION` by default and using the multiple regions option will ignore this.
 
@@ -87,39 +87,65 @@ bind  '"\C-a": "AWS_DEFAULT_PROFILE=production aws-fuzzy --private\e\C-e\er\C-m"
 
 
 ## Advanced usage
-Sometimes you need to use only the IP of the instance. You can use this command to interactively pick IP's to use with other commands.
-To do so, add `--ip-only` as a parameter. Example usage:
+#### Command chaining
+Sometimes you need to use only the ip or instance_id of the instance you've chosen. You can use this command to interactively pick an instance to use with other commands.
+To do so, add `--ip-only` or `--id-only` as a parameter. 
 
-```
+Example usage:
+```shell
 $ echo "foo $(aws-fuzzy --ip-only) bar"
 > foo 10.123.42.12 bar
+
+or 
+
+$ echo "marco $(aws-fuzzy --ssm --id-only) polo"
+> maco i-1234567890abcdef0 polo
 ```
 
-Example to make ansible interactive:
-```
+Practical usage examples:
+```shell
+# power an ansible playbook call with aws-fuzzy
 $ ansible --become --ask-become-pass -v -i "$(aws-fuzzy --ip-only)," all -m shell -a "setenforce 0"
+
+#or
+
+# add a function to your profile to quickly lookup the status of a host
+$ aws ec2 describe-instance-status $(aws-fuzzy --id-only) --instance-id 
 ```
 
-This will bring an interactive prompt, and the IP of the instance of your choice will
-be used. You can combine it with basically any command you want, sky is the limit now ;)
+This will bring an interactive prompt, and the chosen value of the instance will
+be returned. You can combine it with basically any command you want, sky is the limit now ;)
+
+#### Using SSM
+Additionally, if instead of ssh, you're using the AWS product `Secure Session Manager (SSM)` you can use the `--ssm` flag when calling the command to connect to a host. It will attempt to connect to as the user that is executing the command that powered aws-fuzzy.
+
+Example:
+```shell
+aws-fuzzy --ssm
+```
+
+This will cause the command to use a different template, and retrieve the instance_id instead of the ip address. 
+
+You can override the settings for SSM similarly to how you can change it with the default execution mode.
+`AWS_FUZZ_SSM_COMMAND_TEMPLATE` - set this env var if you want to customize the ssm command , defaults to `aws ssm start-session --profile {profile} --target {target}`
 
 ## Cache
 
-If you are managing lots of instances and downloading the data takes too long, you can use the built in cache. To enable it set the following variables in your `.bashrc`:
+If you are managing lots of instances and downloading the data takes too long, you can use the built-in cache. To enable it set the following variables in your `.bashrc`:
 ```
 export AWS_FUZZ_USE_CACHE=yes
 export AWS_FUZZ_CACHE_EXPIRY=3600  # expiry time in seconds
 ```
 
 If you set `AWS_FUZZ_CACHE_EXPIRY=0` to zero, it will never expire your cache.
-To invalidate cache and refresh data, run with `--no-cache` param.
+To invalidate the cache and refresh data, run with `--no-cache` param.
 Cache will be stored as a file in `~/.aws_fuzzy_finder_cache/` directory per AWS profile.
 
 ## Tunneling
 
 If you have to access your instances through a gateway instance, use the `--tunneling` param. This will make the fuzzy find to run twice: first time you will pick the gateway to tunnel through, and the second time you choose is the instance you would like to SSH into.
 
-Gateway must be allowed to access the instance with its own ssh key. You may set the user and key path spearately using `--tunnel-user` and `--tunnel-key-path` params. The key will be looked up ON the gateway instace.
+Gateway must be allowed to access the instance with its own ssh key. You may set the user and key path spearately using `--tunnel-user` and `--tunnel-key-path` params. The key will be looked up ON the gateway instance.
 
 ## Dependency conflicts/ Virtualenvs
 
