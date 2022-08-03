@@ -28,7 +28,7 @@ if platform.processor() == 'i386':
 elif platform.processor() == 'arm':
     arch = 'arm64'
 else:
-    print('Architecture is currently not supported'.format(platform.processor()))
+    print('Architecture ({}) is currently not supported'.format(platform.processor()))
     exit(1)
 
 if sys.platform.startswith('linux'):
