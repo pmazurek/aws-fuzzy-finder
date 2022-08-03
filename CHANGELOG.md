@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.2] - 2022-08-03
+
+### Changed
+
++ Removed support of python 3.5
++ Test automation runs for python 2.7, 3.6, 3.7, 3.8, 3.9, 3.10
+
+### Fixed
+
++ [#44][p44] Upgraded fzf to work on mac os monterey and ARM architecture by @epoplavskis
+
++ [#45][p45] Fix tests and bump up the version number by @palankai
+
+[p44]: https://github.com/pmazurek/aws-fuzzy-finder/pull/44
+
+[p45]: https://github.com/pmazurek/aws-fuzzy-finder/pull/45
+
+
 ## [1.1.1] - 2021-02-24
 
 ### Added
